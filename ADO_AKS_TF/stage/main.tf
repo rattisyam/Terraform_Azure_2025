@@ -6,7 +6,7 @@ resource "azurerm_resource_group" "aks_rg" {
 
 #create service principal
 module "serviceprincipal" {
-  source = "./modules/serviceprincipal"
+  source = "../modules/serviceprincipal"
   service_principal_name = var.service_principal_name
   depends_on = [ azurerm_resource_group.aks_rg ]
 
@@ -22,7 +22,7 @@ resource "azurerm_role_assignment" "roleforsp" {
 
 #create key vault
 module "keyvault" {
-  source = "./modules/keyvault"
+  source = "../modules/keyvault"
   location = var.location
   key_vault_name = var.key_vault_name
   resource_group_name = var.resource_group_name
@@ -44,7 +44,7 @@ resource "azurerm_key_vault_secret" "sp_client_secret" {
 
 #create aks cluster
 module "aks_cluster" {  
-  source = "./modules/aks"
+  source = "../modules/aks"
   service_principal_name = var.service_principal_name
   client_id = module.serviceprincipal.client_id
   client_secret = module.serviceprincipal.client_secret
