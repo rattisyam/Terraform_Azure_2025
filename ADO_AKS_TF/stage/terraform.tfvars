@@ -1,0 +1,7 @@
+resource_group_name = "ado-aks-stage-rg"
+location = "southindia"
+service_principal_name = "ado-aks-stage-sp"
+key_vault_name = "ado-aks-stage-kv"
+sub_id = "f28577aa-ecad-4b8d-a9b7-ee289e3a749c"
+node_pool_name = "stagenodepool1"
+cluster_name = "ado_aks_stage_cluster"
