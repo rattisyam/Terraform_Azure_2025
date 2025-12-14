@@ -23,7 +23,8 @@ resource "azurerm_key_vault_access_policy" "sp_kv_policy" {
   secret_permissions = [
     "Get",
     "List",
-    "Set"
+    "Set",
+    "Delete"
   ]
   
 }
@@ -38,7 +39,8 @@ resource "azurerm_key_vault_access_policy" "loginuser_sp_kv_policy_read" {
   secret_permissions = [
     "Get",
     "List",
-    "Set"
+    "Set",
+    "Delete"
   ]
 
 }

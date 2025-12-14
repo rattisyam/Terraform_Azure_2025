@@ -1,0 +1,109 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - ADO_AKS_TF/*
+    - azure-pipelines.yml
+stages:
+- stage:
+  jobs:
+  - job: Validate
+    pool:
+     vmImage: 'ubuntu-latest'
+    steps:
+    - task: TerraformInstaller@1
+      inputs:
+        terraformVersion: '1.9.0'
+    - task: TerraformTask@5
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/ADO_AKS_TF/dev'
+        backendServiceArm: 'Pay-As-You-Go(f28577aa-ecad-4b8d-a9b7-ee289e3a749c)'
+        backendAzureRmResourceGroupName: 'ado-terraform-state-rg'
+        backendAzureRmStorageAccountName: 'tfdevbackend2025syam'
+        backendAzureRmContainerName: 'tfstate'
+        backendAzureRmKey: 'dev.terraform.tfstate'
+    - task: TerraformTask@5
+      inputs:
+        provider: 'azurerm'
+        command: 'validate'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/ADO_AKS_TF/dev'
+
+- stage: Dev_Deploy
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  jobs: 
+  - job: terraform_apply_dev
+    pool:
+      vmImage: "ubuntu-latest"
+    steps:
+    - task: TerraformInstaller@1
+      inputs:
+        terraformVersion: '1.9.0'
+    - task: TerraformTask@5
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/ADO_AKS_TF/dev'
+        backendServiceArm: 'Pay-As-You-Go(f28577aa-ecad-4b8d-a9b7-ee289e3a749c)'
+        backendAzureRmResourceGroupName: 'ado-terraform-state-rg'
+        backendAzureRmStorageAccountName: 'tfdevbackend2025syam'
+        backendAzureRmContainerName: 'tfstate'
+        backendAzureRmKey: 'dev.terraform.tfstate'
+    - task: TerraformTask@5
+      inputs:
+        provider: 'azurerm'
+        command: 'apply'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/ADO_AKS_TF/dev'
+        commandOptions: '--auto-approve'
+        environmentServiceNameAzureRM: 'Pay-As-You-Go(2)(f28577aa-ecad-4b8d-a9b7-ee289e3a749c)'
+
+- stage: Stage_Deploy
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  jobs: 
+  - job: terraform_apply_stage
+    pool:
+      vmImage: "ubuntu-latest"
+    steps:
+    - task: TerraformInstaller@1
+      inputs:
+        terraformVersion: '1.9.0'
+    - task: TerraformTask@5
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/ADO_AKS_TF/stage'
+        backendServiceArm: 'Pay-As-You-Go(f28577aa-ecad-4b8d-a9b7-ee289e3a749c)'
+        backendAzureRmResourceGroupName: 'ado-terraform-state-rg'
+        backendAzureRmStorageAccountName: 'tfstagebackend2025syam'
+        backendAzureRmContainerName: 'tfstate'
+        backendAzureRmKey: 'stage.terraform.tfstate'
+    - task: TerraformTask@5
+      inputs:
+        provider: 'azurerm'
+        command: 'apply'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/ADO_AKS_TF/stage'
+        commandOptions: '--auto-approve'
+        environmentServiceNameAzureRM: 'Pay-As-You-Go(2)(f28577aa-ecad-4b8d-a9b7-ee289e3a749c)'
+  
+        
+    
+    
+    
+  
+
+  
+
+
+    
+  
+
+
+

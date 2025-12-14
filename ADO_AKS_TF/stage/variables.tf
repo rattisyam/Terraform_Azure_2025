@@ -30,3 +30,9 @@ variable "sub_id" {
   default = "f28577aa-ecad-4b8d-a9b7-ee289e3a749c"
   
 }
+variable "node_pool_name" {
+  
+}
+variable "cluster_name" {
+  
+}
